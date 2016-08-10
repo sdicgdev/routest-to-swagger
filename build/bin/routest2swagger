@@ -1,0 +1,36 @@
+#!/usr/bin/env node
+'use strict';
+
+var _ingest = require('../lib/ingest');
+
+var _ingest2 = _interopRequireDefault(_ingest);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var parseArgs = require('minimist');
+var fs = require('fs');
+
+var argv = parseArgs(process.argv.slice(2));
+
+var package_file_location = location_of(argv.p || argv.package || './package.json');
+var output_file_location = location_of(argv.o || argv.output || './swagger.json');
+var package_info = require(package_file_location);
+var path_glob = location_of(argv.g || argv.glob);
+
+if (!path_glob) throw new Error("No way to find routes files given. -g or --glob are required.");
+
+(0, _ingest2.default)(package_info, path_glob).then(function (swagger_file) {
+  var json_output = JSON.stringify(swagger_file, null, "\t");
+  fs.writeFile(output_file_location, json_output, function (e) {
+    if (e) {
+      throw e;
+    }
+  });
+}).catch(function (e) {
+  return console.log(e);
+});
+
+function location_of(filename) {
+  var location = filename.match(/^\//) ? filename : process.cwd() + '/' + filename;
+  return location;
+}
