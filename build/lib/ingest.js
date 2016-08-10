@@ -14,10 +14,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var glob = require("glob");
 
 function ingest(package_info, path_glob) {
+  var opts = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
   var swagger_info = (0, _creation.swaggerize_package_info)(package_info);
   var swagger_file_promise = gather_paths(path_glob).then(function (result) {
     return result.reduce(function (paths, batch) {
-      return _creation.add_path.apply(undefined, [paths].concat(_toConsumableArray(batch)));
+      return _creation.add_path.apply(undefined, [paths, opts].concat(_toConsumableArray(batch)));
     }, (0, _immutable.Map)());
   }).then(function (paths) {
     return (0, _creation.assemble_swagger_file)(swagger_info, paths);

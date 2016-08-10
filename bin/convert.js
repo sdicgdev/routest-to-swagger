@@ -11,9 +11,13 @@ const output_file_location  = location_of(argv.o||argv.output ||'./swagger.json'
 const package_info = require(package_file_location);
 const path_glob    = location_of(argv.g||argv.glob)
 
+const opts = {
+  aws: (argv.a||argv.aws)
+}
+
 if(!path_glob) throw new Error("No way to find routes files given. -g or --glob are required.")
 
-ingest(package_info, path_glob)
+ingest(package_info, path_glob, opts)
   .then(swagger_file => {
     const json_output = JSON.stringify(swagger_file, null, "\t")
     fs.writeFile(output_file_location, json_output, (e) =>{if(e){ throw(e) }});
